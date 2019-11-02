@@ -14,14 +14,14 @@ h = {
 
 
 def get_potential(infile, method='maxrange'):
+    data = np.genfromtxt(infile, dtype='str', delimiter=',')
     if method == 'maxrange':
-        # data = pd.read_csv(infile, header=0, index_col='Date')
-        data = np.genfromtxt(infile, dtype='str', delimiter=',')
         if len(data) > 0:
             data = data[1:]
         else:
-        	print('Empty file: {}'.format(infile))
-        	return 0
+            print('Empty file: {}'.format(infile))
+            return 0
+        # data = pd.read_csv(infile, header=0, index_col='Date')
         # Now I need to find the max- min, where max_date > min_date
         lmin = np.zeros(len(data), float)
         rmax = np.zeros(len(data), float)
@@ -34,7 +34,13 @@ def get_potential(infile, method='maxrange'):
             rmax[i] = max(float(data[i][h['High']]), rmax[i+1])
 
         return np.max(rmax - lmin)
-
+    elif method == 'subdollar':
+        if len(data) > 0:
+            data = data[1:]
+        else:
+            print('Empty file: {}'.format(infile))
+            return 0
+        # I need some cheap stocks
 
 def parse_stock_potential(indir):
     # df = pd.DataFrame()
@@ -46,11 +52,12 @@ def parse_stock_potential(indir):
     # sys.stdout.write("\b" * )
     i = 0
     for stockfile in files:
-	    print('[{}/{}]'.format(i, len(files)))
+        print('[{}/{}]'.format(i, len(files)))
         if 'us.txt' not in stockfile:
             continue
         name = stockfile.replace('.us.txt', '')
-        potential = get_potential(os.path.join(indir, stockfile))
+        potential = get_potential(os.path.join(indir, stockfile), method='maxrange')
+        potential = get_potential(os.path.join(indir, stockfile), method='subdollar')
         stocks.append([name, potential])
         i+=1
     stocks = sorted(stocks, key=lambda a: a[1], reverse=True)
