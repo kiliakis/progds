@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-d', '--datadir', action='store', type=str,
                     help='The input stock data dir.')
 
-parser.add_argument('-s', '--stocks', action='store', type=int,
+parser.add_argument('-s', '--stocks', action='store', type=int, default=-1,
                     help='Number of stocks to check.')
 
 # parser.add_argument('-v', '--value', action='store', type=int,

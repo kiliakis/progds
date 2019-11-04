@@ -24,7 +24,7 @@ h = {
 
 
 
-def get_potential(infile, method='maxr'):
+def get_potential(infile, method='maxr', trans=1000):
     data = np.genfromtxt(infile, dtype='str', delimiter=',')
     if len(data) > 0:
         data = data[1:]
@@ -64,6 +64,39 @@ def get_potential(infile, method='maxr'):
         max_val = np.max(max_val)
         return [data[dollar_i, h['Date']], max_val]
     elif method == 'dp':
+        # limitations: transactions
+        # daily volume
+        # each day, I can either buy one or more stocks
+        # sell one or more stocks
+        # each day I can do one of the 6 trans types
+        # for all stocks I own
+        # dp[trans][date][stocks] = balance and I start with max (1usd, min low)
+        # dp[0] = 0
+        # lets say stocks 
+        # I need to find dp[N][last date]
+        dp = [[{}] * len(data)+1] * (trans + 1)
+        return dp_potential(data, dp)
+
+
+def dp_potential(data, dp):
+
+        sbal = max(1, np.min(np.array(data[:, h['Low']], float)))
+        
+        dp = np.zeros((trans+1, len(data+1)), float)
+        # This says we start with money enough to buy one stock
+        dp[:, 0] = sbal
+
+        # With no transactions, we only have sbal money 
+        dp[0, :] = sbal
+
+        for t in np.arange(1, trans+2):
+            for i in np.arange(len(data)):
+                max_so_far = -1
+                # either I buy as many stocks as I can
+                dp[t, i] = max()
+                # or I do nothing
+                # or I sell all my stocks
+
         return []
 
 
